@@ -3,6 +3,7 @@ declare module "@nova/redis-cache" {
     // IMPORTS AND RE-EXPORTS
     // --------------------------------------------------------------------------------------------
     import * as events from 'events';
+    import * as tls from 'tls';
 
     import { Logger, Exception } from '@nova/core';
     export { Logger, TraceSource, TraceCommand } from '@nova/core';
@@ -14,6 +15,7 @@ declare module "@nova/redis-cache" {
         port            : number;
         password        : string;
         prefix?         : string;
+        tls?            : tls.ConnectionOptions;
         retry_strategy? : (options: ConnectionRetryOptions) => number | Error;
     }
 

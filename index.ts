@@ -7,6 +7,10 @@ import { CacheConfig, Logger, TraceSource } from '@nova/redis-cache';
 import { CacheClient } from './lib/Client';
 import { CacheError } from './lib/Error';
 
+// RE-EXPORTS
+// ================================================================================================
+export { CacheError } from './lib/Error';
+
 // MODULE VARIABLES
 // ================================================================================================
 const ERROR_EVENT = 'error';

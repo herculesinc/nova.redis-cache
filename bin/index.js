@@ -7,6 +7,10 @@ const redis = require("redis");
 const nova = require("@nova/core");
 const Client_1 = require("./lib/Client");
 const Error_1 = require("./lib/Error");
+// RE-EXPORTS
+// ================================================================================================
+var Error_2 = require("./lib/Error");
+exports.CacheError = Error_2.CacheError;
 // MODULE VARIABLES
 // ================================================================================================
 const ERROR_EVENT = 'error';
