@@ -32,22 +32,30 @@ class CacheClient {
         const stringValue = JSON.stringify(value);
         // execute redis set (or setex) command
         if (expires) {
+            const command = {
+                name: 'set',
+                text: `SETEX ${key} ${expires} ${stringValue}`
+            };
             return new Promise((resolve, reject) => {
                 this.client.setex(key, expires, stringValue, (error) => {
-                    this.logger.trace(this.source, 'set', Date.now() - start, !error);
+                    this.logger.trace(this.source, command.name, Date.now() - start, !error);
                     if (error) {
-                        return reject(new Error_1.CacheError(error, 'Failed to set a cache item'));
+                        return reject(new Error_1.CacheError(error, command));
                     }
                     resolve();
                 });
             });
         }
         else {
+            const command = {
+                name: 'set',
+                text: `SET ${key} ${stringValue}`
+            };
             return new Promise((resolve, reject) => {
                 this.client.set(key, stringValue, (error) => {
-                    this.logger.trace(this.source, 'set', Date.now() - start, !error);
+                    this.logger.trace(this.source, command.name, Date.now() - start, !error);
                     if (error) {
-                        return reject(new Error_1.CacheError(error, 'Failed to set a cache item'));
+                        return reject(new Error_1.CacheError(error, command));
                     }
                     resolve();
                 });
@@ -59,12 +67,16 @@ class CacheClient {
             throw new TypeError('Cannot execute cache script: script is undefined');
         const start = Date.now();
         this.logger.debug(`Executing cache script`);
+        const command = {
+            name: 'execute',
+            text: `EVAL "${script}" ${keys} ${parameters}`
+        };
         return new Promise((resolve, reject) => {
             // execute the script
             this.client.eval(script, keys.length, ...keys, ...parameters, (error, result) => {
-                this.logger.trace(this.source, 'execute', Date.now() - start, !error);
+                this.logger.trace(this.source, command.name, Date.now() - start, !error);
                 if (error) {
-                    return reject(new Error_1.CacheError(error, 'Failed to execute cache script'));
+                    return reject(new Error_1.CacheError(error, command));
                 }
                 let value;
                 try {
@@ -84,12 +96,16 @@ class CacheClient {
         const keys = Array.isArray(keyOrKeys) ? keyOrKeys : [keyOrKeys];
         const start = Date.now();
         this.logger.debug(`Clearing values for ${keys.length} keys from cache`);
+        const command = {
+            name: 'clear',
+            text: `DEL ${keys}`
+        };
         // execute redis del command
         return new Promise((resolve, reject) => {
             this.client.del(keys, (error) => {
-                this.logger.trace(this.source, 'clear', Date.now() - start, !error);
+                this.logger.trace(this.source, command.name, Date.now() - start, !error);
                 if (error) {
-                    return reject(new Error_1.CacheError(error, 'Failed to clear cache items'));
+                    return reject(new Error_1.CacheError(error, command));
                 }
                 resolve();
             });
@@ -100,12 +116,16 @@ class CacheClient {
     getOne(key) {
         const start = Date.now();
         this.logger.debug(`Retrieving value for key (${key}) from the cache`);
+        const command = {
+            name: 'get',
+            text: `GET ${key}`
+        };
         return new Promise((resolve, reject) => {
             // run the get command and return the result
             this.client.get(key, (error, result) => {
-                this.logger.trace(this.source, 'get', Date.now() - start, !error);
+                this.logger.trace(this.source, command.name, Date.now() - start, !error);
                 if (error) {
-                    return reject(new Error_1.CacheError(error, 'Failed to retrieve a value from cache'));
+                    return reject(new Error_1.CacheError(error, command));
                 }
                 let value;
                 try {
@@ -122,12 +142,16 @@ class CacheClient {
     getAll(keys) {
         const start = Date.now();
         this.logger.debug(`Retrieving values for (${keys.length}) keys from the cache`);
+        const command = {
+            name: 'get',
+            text: `MGET ${keys}`
+        };
         return new Promise((resolve, reject) => {
             // run the get command and return the result
             this.client.mget(keys, (error, results) => {
-                this.logger.trace(this.source, 'get', Date.now() - start, !error);
+                this.logger.trace(this.source, command.name, Date.now() - start, !error);
                 if (error) {
-                    return reject(new Error_1.CacheError(error, 'Failed to retrieve values from cache'));
+                    return reject(new Error_1.CacheError(error, command));
                 }
                 // de-serialize values
                 const values = [];
