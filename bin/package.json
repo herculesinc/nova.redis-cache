@@ -1,6 +1,6 @@
 {
   "name": "@nova/redis-cache",
-  "version": "0.1.1",
+  "version": "0.3.0",
   "description": "Redis cache module for Nova framework",
   "keywords": [
     "nova",
@@ -22,7 +22,7 @@
     "node": "10.15.x"
   },
   "dependencies": {
-    "@nova/core": "0.2.x",
+    "@nova/core": "0.3.x",
     "redis": "2.8.x"
   },
   "devDependencies": {
